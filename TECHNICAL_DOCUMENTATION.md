@@ -484,7 +484,7 @@ CREATE TYPE case_status AS ENUM ('suspected', 'probable', 'confirmed', 'discarde
 #### Environment Variables
 ```env
 RESEND_API_KEY=your_resend_api_key
-EMAIL_FROM=AI4Lassa <johnsonoluwafemi200@gmail.com>
+EMAIL_FROM=AI4Lassa <no-reply@ai4lassa.org>
 SUPPORT_EMAIL=support@ai4lassa.com
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
 ```

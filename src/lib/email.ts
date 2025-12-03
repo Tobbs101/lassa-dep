@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Email configuration
 // Temporarily use verified sender email until domain is verified
-const FROM_EMAIL = process.env.EMAIL_FROM || 'AI4Lassa <johnsonoluwafemi200@gmail.com>';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'AI4Lassa <no-reply@ai4lassa.org>';
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'support@ai4lassa.com';
 
 interface SendEmailOptions {

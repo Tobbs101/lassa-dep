@@ -360,8 +360,8 @@ export default function AdminPanel() {
 
       <div className="flex">
         {/* Sidebar */}
-        <div className={`${isMobileMenuOpen ? 'fixed inset-0 z-50 w-full md:relative md:inset-auto md:w-64' : 'hidden'} bg-white shadow-sm border-r border-gray-200`}>
-          <div className="p-4">
+        <div className={`${isMobileMenuOpen ? 'fixed inset-0 z-50 w-full' : 'hidden'} md:block md:relative md:inset-auto md:w-64 bg-white shadow-sm border-r border-gray-200`}>
+          <div className="p-4 h-full">
             {/* Close button for mobile */}
             <div className="md:hidden flex justify-end mb-4">
               <button
@@ -447,7 +447,7 @@ export default function AdminPanel() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-4 md:p-6">
+        <div className="flex-1 p-4 md:p-6 overflow-x-hidden">
           {activeTab === "dashboard" && (
             <div className="space-y-4 md:space-y-6">
               {/* Dashboard Header */}
@@ -810,26 +810,26 @@ export default function AdminPanel() {
             <div className="space-y-4 md:space-y-6">
               <div>
                 <h1 className="text-xl md:text-2xl font-bold text-gray-900">Data Upload</h1>
-                <p className="text-gray-600">Upload new datasets to the system</p>
+                <p className="text-sm md:text-base text-gray-600">Upload new datasets to the system</p>
               </div>
 
               {/* Upload Form */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="p-3 md:p-6 border-b border-gray-200">
-                  <h3 className="text-sm md:text-lg font-medium text-gray-900">Upload New Dataset</h3>
-                  <p className="text-xs md:text-sm text-gray-500">Select a file and specify the upload type</p>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 w-full md:max-w-2xl">
+                <div className="p-4 md:p-6 border-b border-gray-200">
+                  <h3 className="text-base md:text-lg font-medium text-gray-900">Upload New Dataset</h3>
+                  <p className="text-xs md:text-sm text-gray-500 mt-1">Select a file and specify the upload type</p>
                 </div>
-                <div className="p-3 md:p-6">
-                  <form onSubmit={handleFileUpload} className="space-y-4 md:space-y-6">
+                <div className="p-4 md:p-6">
+                  <form onSubmit={handleFileUpload} className="space-y-5 md:space-y-6">
                     <div>
-                      <label htmlFor="uploadType" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="uploadType" className="block text-sm font-medium text-gray-700 mb-2">
                         Upload Type
                       </label>
                       <select
                         id="uploadType"
                         value={uploadType}
                         onChange={(e) => setUploadType(e.target.value)}
-                        className="w-full px-3 py-4 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lassa-red focus:border-lassa-red text-sm md:text-sm"
+                        className="w-full px-4 py-3 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lassa-red focus:border-lassa-red text-sm"
                         required
                       >
                         <option value="">Select upload type</option>
@@ -838,7 +838,7 @@ export default function AdminPanel() {
                     </div>
 
                     <div>
-                      <label htmlFor="file" className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="file" className="block text-sm font-medium text-gray-700 mb-2">
                         File
                       </label>
                       <input
@@ -846,29 +846,29 @@ export default function AdminPanel() {
                         id="file"
                         onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
                         accept=".csv,.json,.xlsx"
-                        className="w-full px-3 py-4 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lassa-red focus:border-lassa-red text-sm md:text-sm"
+                        className="w-full px-4 py-3 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lassa-red focus:border-lassa-red text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-lassa-red file:text-white hover:file:bg-lassa-red-dark"
                         required
                       />
-                      <p className="text-xs text-gray-500 mt-1">Supported formats: CSV, JSON, XLSX (Max 10MB)</p>
+                      <p className="text-xs text-gray-500 mt-2">Supported formats: CSV, JSON, XLSX (Max 10MB)</p>
                     </div>
 
                     {/* Status Messages */}
                     {uploadStatus && (
-                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-                        <CheckCircleIcon className="w-5 h-5 text-green-600 flex-shrink-0" />
-                        <div>
-                          <p className="text-green-800 font-medium">Upload successful!</p>
-                          <p className="text-green-700 text-sm">{uploadStatus}</p>
+                      <div className="p-3 md:p-4 bg-green-50 border border-green-200 rounded-lg flex items-start md:items-center gap-3">
+                        <CheckCircleIcon className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5 md:mt-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-green-800">Upload successful!</p>
+                          <p className="text-xs md:text-sm text-green-700 mt-1 break-words">{uploadStatus}</p>
                         </div>
                       </div>
                     )}
 
                     {uploadError && (
-                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                        <ExclamationTriangleIcon className="w-5 h-5 text-red-600 flex-shrink-0" />
-                        <div>
-                          <p className="text-red-800 font-medium">Upload failed</p>
-                          <p className="text-red-700 text-sm">{uploadError}</p>
+                      <div className="p-3 md:p-4 bg-red-50 border border-red-200 rounded-lg flex items-start md:items-center gap-3">
+                        <ExclamationTriangleIcon className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5 md:mt-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-red-800">Upload failed</p>
+                          <p className="text-xs md:text-sm text-red-700 mt-1 break-words">{uploadError}</p>
                         </div>
                       </div>
                     )}
@@ -876,7 +876,7 @@ export default function AdminPanel() {
                     <Button 
                       type="submit" 
                       disabled={!uploadFile || !uploadType || uploadStatus === "Uploading..."}
-                      className="w-full bg-lassa-red text-white hover:bg-lassa-red-dark flex items-center justify-center gap-2 py-4 md:py-2 text-sm md:text-sm font-medium"
+                      className="w-full bg-lassa-red text-white hover:bg-lassa-red-dark flex items-center justify-center gap-2 py-3 md:py-2 text-sm font-medium"
                     >
                       {uploadStatus === "Uploading..." ? (
                         <>
@@ -895,27 +895,27 @@ export default function AdminPanel() {
               </div>
 
               {/* Sample Data Section */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="p-3 md:p-6 border-b border-gray-200">
-                  <h3 className="text-sm md:text-lg font-medium text-gray-900">Outbreak Data Format</h3>
-                  <p className="text-xs md:text-sm text-gray-500">Reference for proper outbreak data format and structure</p>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 w-full md:max-w-2xl">
+                <div className="p-4 md:p-6 border-b border-gray-200">
+                  <h3 className="text-base md:text-lg font-medium text-gray-900">Outbreak Data Format</h3>
+                  <p className="text-xs md:text-sm text-gray-500 mt-1">Reference for proper outbreak data format and structure</p>
                 </div>
-                <div className="p-3 md:p-6">
-                  <div className="space-y-3 md:space-y-6">
-                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <h4 className="text-sm md:text-base font-medium text-gray-900 mb-2 md:mb-3">CSV Format Example</h4>
-                      <div className="bg-gray-900 text-green-400 p-3 md:p-4 rounded-md overflow-x-auto">
-                        <pre className="text-xs md:text-sm whitespace-pre-wrap break-words">{`Patient_ID,Age,Sex,Admission_Date,Ward_ICU,Outcome,Temperature_C,Heart_Rate_bpm,Respiratory_Rate,Systolic_BP,Diastolic_BP,SpO2,GCS,Oxygen_Support,Bleeding,State,LGA,Case_Status,Last_Update
+                <div className="p-4 md:p-6">
+                  <div className="space-y-4 md:space-y-6">
+                    <div className="bg-gray-50 rounded-lg p-4 md:p-4">
+                      <h4 className="text-sm md:text-base font-medium text-gray-900 mb-3">CSV Format Example</h4>
+                      <div className="bg-gray-900 text-green-400 p-3 md:p-4 rounded-md overflow-x-auto -mx-2 md:mx-0">
+                        <pre className="text-[10px] md:text-xs whitespace-pre overflow-x-auto font-mono">{`Patient_ID,Age,Sex,Admission_Date,Ward_ICU,Outcome,Temperature_C,Heart_Rate_bpm,Respiratory_Rate,Systolic_BP,Diastolic_BP,SpO2,GCS,Oxygen_Support,Bleeding,State,LGA,Case_Status,Last_Update
 P001,59,Male,2025-09-01,Ward,Discharged,37.3,88,22,94,65,96,11,No,No,Borno,Maiduguri,Confirmed,2025-09-15
 P002,40,Male,2025-09-03,ICU,Deceased,36.5,62,18,141,96,86,10,No,No,Borno,Jere,Confirmed,2025-09-16
 P003,63,Female,2025-09-05,ICU,Referred,39.8,121,12,144,87,100,14,Yes,Yes,Kano,Dala,Suspected,2025-09-17`}</pre>
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <h4 className="text-sm md:text-base font-medium text-gray-900 mb-2 md:mb-3">JSON Format Example</h4>
-                      <div className="bg-gray-900 text-green-400 p-3 md:p-4 rounded-md overflow-x-auto">
-                        <pre className="text-xs md:text-sm whitespace-pre-wrap break-words">{`[
+                    <div className="bg-gray-50 rounded-lg p-4 md:p-4">
+                      <h4 className="text-sm md:text-base font-medium text-gray-900 mb-3">JSON Format Example</h4>
+                      <div className="bg-gray-900 text-green-400 p-3 md:p-4 rounded-md overflow-x-auto -mx-2 md:mx-0">
+                        <pre className="text-[10px] md:text-xs whitespace-pre overflow-x-auto font-mono">{`[
   {
     "Patient_ID": "P001",
     "Age": 59,
@@ -941,10 +941,10 @@ P003,63,Female,2025-09-05,ICU,Referred,39.8,121,12,144,87,100,14,Yes,Yes,Kano,Da
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4">
-                        <h5 className="text-sm md:text-base font-medium text-blue-900 mb-2">Required Fields</h5>
-                        <ul className="text-xs md:text-sm text-blue-800 space-y-1">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-4">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h5 className="text-sm font-medium text-blue-900 mb-3">Required Fields</h5>
+                        <ul className="text-xs md:text-sm text-blue-800 space-y-1.5">
                           <li>• Patient_ID (unique identifier)</li>
                           <li>• Age (0-120 years)</li>
                           <li>• Sex (Male/Female/Other)</li>
@@ -960,8 +960,8 @@ P003,63,Female,2025-09-05,ICU,Referred,39.8,121,12,144,87,100,14,Yes,Yes,Kano,Da
                       </div>
 
                       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h5 className="font-medium text-green-900 mb-2">Validation Rules</h5>
-                        <ul className="text-sm text-green-800 space-y-1">
+                        <h5 className="text-sm font-medium text-green-900 mb-3">Validation Rules</h5>
+                        <ul className="text-xs md:text-sm text-green-800 space-y-1.5">
                           <li>• File size: Max 50MB</li>
                           <li>• Formats: CSV, JSON, XLSX</li>
                           <li>• Age: 0-120 years only</li>
@@ -970,7 +970,7 @@ P003,63,Female,2025-09-05,ICU,Referred,39.8,121,12,144,87,100,14,Yes,Yes,Kano,Da
                           <li>• States: Must be valid Nigerian states</li>
                           <li>• No missing required fields</li>
                           <li>• Unique Patient_ID values recommended</li>
-                </ul>
+                        </ul>
                       </div>
                     </div>
                   </div>
