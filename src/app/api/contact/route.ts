@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { emailService } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,43 +45,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert contact form submission into database
+    // Prepare contact data
     const contactData = {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       subject: subject.trim(),
       message: message.trim(),
-      status: 'new',
-      created_at: new Date().toISOString()
     };
 
-    const { data, error } = await supabaseAdmin()
-      .from('contact_submissions')
-      .insert(contactData as any)
-      .select();
+    console.log('Processing contact form:', {
+      name: contactData.name,
+      email: contactData.email,
+      subject: contactData.subject,
+      timestamp: new Date().toISOString()
+    });
 
-    if (error) {
-      console.error('Database error:', error);
+    // Send email notification to AI4Lassa team (primary action)
+    const emailResult = await emailService.sendContactMessage(contactData);
+
+    if (!emailResult.success) {
+      console.error('Failed to send contact email:', emailResult.error);
       return NextResponse.json(
-        { error: 'Failed to submit contact form' },
+        { error: 'Failed to send message. Please try again or contact us directly at ai4lassa@gmail.com' },
         { status: 500 }
       );
     }
 
-    // Log successful submission
-    const submissionId = (data as any)?.[0]?.id || 'unknown';
-    console.log('Contact form submitted:', {
-      id: submissionId,
-      name,
-      email,
-      subject,
-      timestamp: new Date().toISOString()
-    });
+    console.log('Contact email sent successfully');
+
+    // Optionally save to database if Supabase is configured
+    try {
+      const { supabaseAdmin } = await import('@/lib/supabase');
+      const { error: dbError } = await (supabaseAdmin() as any)
+        .from('contact_submissions')
+        .insert({
+          ...contactData,
+          status: 'new',
+          created_at: new Date().toISOString()
+        });
+
+      if (dbError) {
+        console.warn('Database save failed (non-critical):', dbError);
+      } else {
+        console.log('Contact form also saved to database');
+      }
+    } catch (dbError) {
+      console.warn('Database not available (non-critical):', dbError);
+    }
 
     return NextResponse.json({
       success: true,
       message: 'Thank you for your message! We will get back to you soon.',
-      submissionId
     });
 
   } catch (error) {

@@ -12,8 +12,8 @@ export default function Team() {
       id: 1,
       name: "UMARU, Emmanuel Tanko",
       role: "Principal Research/Investigator",
-      title: "Associate Professor | Researcher | Deputy Director @ WASCAL",
-      photo: "/tanko_umaru_emmanuel.png"
+      title: "Professor of Urban and Regional Planning/Urban health Department of Urban and Regional Planning/Doctoral Research Programme on Climate Change and Human Habitat (CC & HH), West African Science Service Centre on Climate Change and Adapted Land Use (WASCAL) Federal University of Technology Minna, Niger State, Nigeria.",
+      photo: "/umaru_emmanuel.png"
     },
     {
       id: 2,
@@ -59,13 +59,20 @@ export default function Team() {
     },
     {
       id: 8,
+      name: "Chibueze Valentine Ikpo (PhD)",
+      role: "Co-Investigator",
+      title: "Lecturer in Software Engineering at Veritas University, Nigeria",
+      photo: "/chibueze.png"
+    },
+    {
+      id: 9,
       name: "Taliha Abiodun Folorunso (PhD)",
       role: "Co-Investigator",
       title: "Senior Lecturer at Mechatronics Engineering. Team lead at Advanced Engineering Innovation Research Group",
       photo: "/tahila_abiodun.png"
     },
     {
-      id: 9,
+      id: 10,
       name: "Sakinat Folorunso",
       role: "Co-Investigator",
       title: "Computer Science lecturer at Olabisi Onabanjo University",

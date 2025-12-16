@@ -278,9 +278,10 @@ export default function AdminPanel() {
               </div>
 
               <div className="text-center">
-                <p className="text-sm text-gray-500">
+            {/*    <p className="text-sm text-gray-500">
                   Demo credentials: <span className="font-medium">admin</span> / <span className="font-medium">ai4lassa2025</span>
                 </p>
+            */}
               </div>
             </form>
           </div>

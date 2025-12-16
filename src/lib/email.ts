@@ -1,12 +1,36 @@
-// Email service integration using Resend
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+// email.ts
+// Email service integration using Nodemailer with Gmail SMTP
+import * as nodemailer from 'nodemailer';
 
 // Email configuration
-// Temporarily use verified sender email until domain is verified
-const FROM_EMAIL = process.env.EMAIL_FROM || 'AI4Lassa <no-reply@ai4lassa.org>';
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'support@ai4lassa.com';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'ai4lassa@gmail.com';
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'ai4lassa@gmail.com';
+
+// Create transporter with Gmail SMTP
+const createTransporter = () => {
+  const config = {
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  };
+  
+  console.log('Creating email transporter with config:', {
+    host: config.host,
+    port: config.port,
+    user: config.auth.user,
+    hasPassword: !!config.auth.pass
+  });
+  
+  // Handle both CommonJS and ES module imports
+  const nodemailerFunc = (nodemailer as any).default || nodemailer;
+  
+  // ✅ FIX: Use the correct Nodemailer function: createTransport
+  return nodemailerFunc.createTransport(config);
+};
 
 interface SendEmailOptions {
   to: string | string[];
@@ -19,23 +43,41 @@ export const emailService = {
   // Send a single email
   async sendEmail({ to, subject, html, text }: SendEmailOptions) {
     try {
-      const { data, error } = await resend.emails.send({
-        from: FROM_EMAIL,
-        to: Array.isArray(to) ? to : [to],
+      // Check if SMTP credentials are configured
+      if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+        const error = 'SMTP credentials not configured. Please set SMTP_USER and SMTP_PASSWORD in .env.local';
+        console.error(error);
+        return { success: false, error: new Error(error) };
+      }
+
+      const transporter = createTransporter();
+      
+      const mailOptions = {
+        from: `AI4Lassa <${FROM_EMAIL}>`,
+        to: Array.isArray(to) ? to.join(', ') : to,
         subject,
         html,
         text: text || html.replace(/<[^>]*>/g, ''), // Strip HTML for text version
+        replyTo: Array.isArray(to) ? to[0] : to, // Allow easy replies
+      };
+
+      console.log('Sending email:', {
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        from: mailOptions.from
       });
 
-      if (error) {
-        console.error('Email send error:', error);
-        return { success: false, error };
-      }
-
-      console.log('Email sent successfully:', data);
-      return { success: true, data };
-    } catch (error) {
-      console.error('Email service error:', error);
+      const info = await transporter.sendMail(mailOptions);
+      console.log('✅ Email sent successfully!');
+      console.log('Message ID:', info.messageId);
+      console.log('Response:', info.response);
+      return { success: true, data: info };
+    } catch (error: any) {
+      console.error('❌ Email service error:');
+      console.error('Error message:', error.message);
+      console.error('Error code:', error.code);
+      console.error('Error command:', error.command);
+      console.error('Full error:', error);
       return { success: false, error };
     }
   },
@@ -79,7 +121,7 @@ export const emailService = {
             
             <div style="text-align: center; margin: 30px 0;">
               <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/live-alerts" 
-                 style="background-color: #c41e3a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                  style="background-color: #c41e3a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
                 View Live Alerts
               </a>
             </div>
@@ -163,11 +205,11 @@ export const emailService = {
             
             <div style="text-align: center; margin: 30px 0;">
               <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/database" 
-                 style="background-color: #c41e3a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; margin-right: 10px;">
+                  style="background-color: #c41e3a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; margin-right: 10px;">
                 View Database
               </a>
               <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/live-alerts" 
-                 style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                  style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
                 View Alerts
               </a>
             </div>
@@ -256,6 +298,99 @@ export const emailService = {
       console.error('Bulk email error:', error);
       return { success: false, error, sent: 0, failed: 0 };
     }
+  },
+
+  // Send contact form message to AI4Lassa team
+  async sendContactMessage(contactData: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+  }) {
+    const { name, email, subject, message } = contactData;
+    const toEmail = 'ai4lassa@gmail.com';
+    
+    const emailSubject = `Contact Form: ${subject}`;
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Contact Form Message</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #c41e3a; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">AI4Lassa Contact Form</h1>
+            <p style="color: white; margin: 10px 0 0 0; font-size: 14px;">New Message Received</p>
+          </div>
+          
+          <div style="background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px;">
+            <h2 style="color: #c41e3a; margin-top: 0;">Contact Details</h2>
+            
+            <div style="background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold; width: 100px;">Name:</td>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee;">${name}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Email:</td>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                    <a href="mailto:${email}" style="color: #c41e3a; text-decoration: none;">${email}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">Subject:</td>
+                  <td style="padding: 10px; border-bottom: 1px solid #eee;">${subject}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; font-weight: bold; vertical-align: top;">Message:</td>
+                  <td style="padding: 10px;">
+                    <div style="white-space: pre-wrap;">${message}</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            
+            <div style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin: 20px 0;">
+              <p style="margin: 0; color: #1565c0;">
+                <strong>Quick Actions:</strong><br>
+                Reply directly to this email to respond to <strong>${name}</strong>
+              </p>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            
+            <p style="font-size: 12px; color: #666; text-align: center;">
+              This message was sent via the AI4Lassa contact form.<br>
+              Timestamp: ${new Date().toLocaleString()}
+            </p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const text = `
+Contact Form Message
+
+Name: ${name}
+Email: ${email}
+Subject: ${subject}
+
+Message:
+${message}
+
+---
+Sent via AI4Lassa Contact Form
+Timestamp: ${new Date().toLocaleString()}
+    `.trim();
+
+    return this.sendEmail({ 
+      to: toEmail, 
+      subject: emailSubject, 
+      html,
+      text
+    });
   }
 };
-

@@ -243,7 +243,7 @@ export default function Contact() {
             {/* Email */}
             <div className="flex items-center justify-center gap-3">
               <EnvelopeIcon className="w-5 h-5 text-gray-600" />
-              <span className="text-gray-700">Email: support@ai4lassa.org</span>
+              <span className="text-gray-700">Email: support@ai4lassa.com</span>
             </div>
 
             {/* Institution */}
